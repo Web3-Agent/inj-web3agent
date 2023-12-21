@@ -24,17 +24,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract MyToken is ERC20 {
     constructor() ERC20("MyToken", "MTK") {}
 }`
-export default function Builder() {
-  const [chatGPTRawResponse, setChatGPTRawResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
-  const [builderForm, setBuilderForm] = useState<any>({
-    template: '',
-    featuresRequest: [],
-    additionDetails: 'The Token name will MyToken with the symbol name MTK'
-
-  })
-  // Features for each template
-  const templateFeatures = {
+export default function Builder ()
+{
+  
+   const templateFeatures = {
     Token: ['Mintable', 'Burnable', 'Pausable', 'Permit', 'Votes', 'Flash Miniting'],
     NFT: ['Custom Metadata', 'Royalty Settings', 'NFT Minting', 'NFT Burning'],
     Staking: ['Stake Tokens', 'Unstake Tokens', 'Reward Calculation', 'Staking Limits'],
@@ -43,6 +36,17 @@ export default function Builder() {
     Launchpad: ['Project Submission', 'Voting System', 'Token Distribution', 'Fundraising Goals'],
     // Define similar arrays for other templates if necessary...
   };
+  
+  const [chatGPTRawResponse, setChatGPTRawResponse] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
+  const [builderForm, setBuilderForm] = useState<any>({
+    template: Object.keys(templateFeatures)[0],
+    featuresRequest: [],
+    additionDetails: 'The Token name will MyToken with the symbol name MTK'
+
+  })
+  // Features for each template
+ 
   const downloadSourceCode = () => {
     setIsLoading(true)
     try {
@@ -210,6 +214,8 @@ export default function Builder() {
             ))}
           </div>
         </section>
+       
+
         {builderForm?.template && (
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">Features Request</h2>
