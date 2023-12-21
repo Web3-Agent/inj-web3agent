@@ -1,48 +1,32 @@
 import { NextResponse } from 'next/server';
 //   Mayur Token with symbol name MYS and supply 300000
 import { preprocessRequest, translatePromptToJSON } from '../../api-helpers/parse-builder-prompt/processors';
+import { getNFTPrompt, getStakingPrompt, getTokenPrompt } from './get-prompts';
 
-const _prompt = `
-Develop a Solidity smart contract to implement the following approach for the web application:
-Approach Heading: __HEADING__
-Approach Content:   
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-
-contract MyToken is ERC20 {
-    constructor() ERC20("MyToken", "MTK") {}
+export const TEMPLATE_MAPPING = {
+    TOKEN: 'Token',
+    NFT: 'NFT',
+    STAKING: 'Staking'
 }
-
-Additional Details: Use "Approach Content" for generation of code, and implement following functionality: __FEATURE__
-
-Your task is to provide the Solidity code for the smart contract that will effectively integrate this approach into the web application. 
-Include relevant functions, variables, and any necessary logic to ensure the successful implementation of the specified feature.
-Ensure that the generated Solidity code:
-1. Compiles without errors.
-2. Is complete and ready for deployment.
-3. The version of Solidity used is "0.8.20" and SPDX-License-Identifier should be "MIT".
-     
-Note: Consider best practices and security considerations for smart contracts during the development.
-`
 export async function POST(request: Request) {
     try {
         const _request = await request.json();
-        console.log({ _request })
-        let prompt = _prompt
-        let __HEADING__ = 'NEWTAJ Token with symbol name NTJ';
-        if (_request.additionDetails) {
-            __HEADING__ = _request.additionDetails
+        let prompt = ''
+        if (_request.template === TEMPLATE_MAPPING.TOKEN) {
+            prompt = getTokenPrompt(_request)
         }
-        let __FEATURE__ = 'ERC20 token'
-        if (_request.featuresRequest && _request?.featuresRequest?.length) {
-            __FEATURE__ = _request?.featuresRequest.join(', ')
+        if (_request.template === TEMPLATE_MAPPING.NFT) {
+            prompt = getNFTPrompt(_request)
         }
-        prompt = prompt.replace('__HEADING__', __HEADING__);
-        prompt = prompt.replace('__FEATURE__', __FEATURE__);
+        if (_request.template === TEMPLATE_MAPPING.STAKING) {
+            prompt = getStakingPrompt(_request)
+        }
+        if (!prompt) {
+            return NextResponse.json({ message: 'Unsppoorted actions', data: _request }, { status: 400 });
+        }
         const preprocessedJSON = await preprocessRequest(prompt);
-        return NextResponse.json({ message: 'Here is gas fee for Ethereum!', data: JSON.stringify(_request), preprocessedJSON }, { status: 200 });
+        return NextResponse.json({ message: 'Here parse version!', data: preprocessedJSON, _request }, { status: 200 });
     } catch (error: any) {
         const message = error.message || 'We ran into a problem Try again in a few minutes!';
         return NextResponse.json({ message, data: error }, { status: 500 });
