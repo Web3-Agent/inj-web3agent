@@ -70,16 +70,16 @@ const SideToggle = () => {
         
         <div className="flex gap-x-4 items-cente mt-6">
           <img
-            src="https://i.imgur.com/eGWZECe.png"
+            src="https://i.imgur.com/VfXLfud.png"
             className={`mt-[-5px] h-9 cursor-pointer duration-500 ${open && "rotate-[360deg]"
               }`}
           />
-          <h1
+          {/* <h1
             className={` origin-left font-bold text-xl duration-300 ${!open && "scale-0"
               }`}
           >
-            Auto Defi
-          </h1>
+            Web3 Agent
+          </h1> */}
         </div>
         <TokenBalancesComponent></TokenBalancesComponent>
 

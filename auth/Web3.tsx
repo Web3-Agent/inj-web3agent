@@ -193,7 +193,7 @@ const INEVM: Chain = {
 // const { chains, provider } = configureChains(NETWORKS, [infuraProvider({ apiKey: "" }), publicProvider()])
 
 // const { connectors } = getDefaultWallets({
-//   appName: "Auto Defi",
+//   appName: "Web3 Agent",
 //   chains,
 // })
 
@@ -213,7 +213,7 @@ const { chains, publicClient } = configureChains(
 );
 
 const { connectors } = getDefaultWallets({
-  appName: 'Auto Defi',
+  appName: 'Web3 Agent',
   projectId: '234235sd',
   chains
 } );

@@ -55,7 +55,7 @@ export function Homescreen() {
           writeTable({ action: "TEST_ACTION", object: { timestamp: Date.now(), body: { code: 12 } } });
         }}>WRITE</Button> */}
         <p className="leading-normal mt-2 text-lg text-muted-foreground text-center">
-          Search information, execute transactions, and much more by chatting with Auto Defi.
+          Search information, execute transactions, and much more by chatting with Web3 Agent.
         </p>
         {/* <p className="mb-2 text-center leading-normal text-muted-foreground">
           I am a smart contract development assistant. I can help you write, and
