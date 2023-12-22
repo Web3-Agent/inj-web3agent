@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 //   Mayur Token with symbol name MYS and supply 300000
 import { preprocessRequest, translatePromptToJSON } from '../../api-helpers/parse-builder-prompt/processors';
-import { getNFTPrompt, getStakingPrompt, getTokenPrompt } from './get-prompts';
+import { getNFTPrompt, getStakingPrompt, getTokenPrompt, getFarmPrompt } from './get-prompts';
 
 
 export const TEMPLATE_MAPPING = {
     TOKEN: 'Token',
     NFT: 'NFT',
-    STAKING: 'Staking'
+    STAKING: 'Staking',
+    FARM : 'Farm'
 }
 export async function POST(request: Request) {
     try {
@@ -21,6 +22,9 @@ export async function POST(request: Request) {
         }
         if (_request.template === TEMPLATE_MAPPING.STAKING) {
             prompt = getStakingPrompt(_request)
+        }
+        if (_request.template === TEMPLATE_MAPPING.FARM) {
+            prompt = getFarmPrompt(_request)
         }
         if (!prompt) {
             return NextResponse.json({ message: 'Unsppoorted actions', data: _request }, { status: 400 });

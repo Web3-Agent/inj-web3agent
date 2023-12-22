@@ -239,6 +239,124 @@ Ensure that the generated Solidity code:
      
 Note: Consider best practices and security considerations for smart contracts during the development.
 `
+
+const _promptForFarming = `Develop a Solidity smart contract to implement the following approach for the web application:
+Approach Heading: __HEADING__
+Approach Content:   
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Snapshot.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
+contract FarmToken is ERC20, ERC20Burnable, ERC20Pausable, ERC20Snapshot, ERC20Votes, Ownable {
+    using SafeERC20 for IERC20;
+    using SafeMath for uint256;
+
+    // The token used for staking
+    IERC20 public stakingToken;
+
+    // Mapping from account address to their current stake
+    mapping(address => uint256) private _stakes;
+
+    // Mapping from account address to the time of their last unstake
+    mapping(address => uint256) private _lastUnstakeTime;
+
+    // Total staked tokens
+    uint256 private _totalStaked;
+
+    // Duration for which the user must wait after unstaking before being able to stake again
+    uint256 public unstakeCooldownPeriod;
+
+    // Events
+    event Staked(address indexed user, uint256 amount);
+    event Unstaked(address indexed user, uint256 amount);
+
+    constructor(
+        string memory name,
+        string memory symbol,
+        address _stakingToken,
+        uint256 _unstakeCooldownPeriod
+    ) ERC20(name, symbol) {
+        stakingToken = IERC20(_stakingToken);
+        unstakeCooldownPeriod = _unstakeCooldownPeriod;
+    }
+
+    // Stake tokens to earn rewards
+    function stake(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        require(stakingToken.balanceOf(msg.sender) >= amount, "Not enough tokens to stake");
+
+        _updateCooldown(msg.sender);
+
+        // Transfer tokens from the user to the contract
+        stakingToken.safeTransferFrom(msg.sender, address(this), amount);
+
+        // Mint new tokens to the user
+        _mint(msg.sender, amount);
+
+        // Update the user's stake
+        _stakes[msg.sender] = _stakes[msg.sender].add(amount);
+        _totalStaked = _totalStaked.add(amount);
+
+        emit Staked(msg.sender, amount);
+    }
+
+    // Unstake tokens and claim rewards
+    function unstake(uint256 amount) external {
+        require(amount > 0, "Amount must be greater than 0");
+        require(_stakes[msg.sender] >= amount, "Not enough staked tokens");
+        require(_canUnstake(msg.sender), "Cooldown period has not elapsed");
+
+        // Burn tokens from the user
+        _burn(msg.sender, amount);
+
+        // Transfer staked tokens back to the user
+        stakingToken.safeTransfer(msg.sender, amount);
+
+        // Update the user's stake
+        _stakes[msg.sender] = _stakes[msg.sender].sub(amount);
+        _totalStaked = _totalStaked.sub(amount);
+        _lastUnstakeTime[msg.sender] = block.timestamp;
+
+        emit Unstaked(msg.sender, amount);
+    }
+
+    // Get the user's current stake
+    function stakeOf(address account) external view returns (uint256) {
+        return _stakes[account];
+    }
+
+    // Get the total staked tokens
+    function totalStaked() external view returns (uint256) {
+        return _totalStaked;
+    }
+
+    // Check if the user can unstake based on the cooldown period
+    function _canUnstake(address account) internal view returns (bool) {
+        return block.timestamp >= _lastUnstakeTime[account] + unstakeCooldownPeriod;
+    }
+
+    // Update cooldown timestamp
+    function _updateCooldown(address account) internal {
+        if (!_canUnstake(account)) {
+            _lastUnstakeTime[account] = block.timestamp;
+        }
+    }
+}
+`
+
 export const getTokenPrompt = (request: any) => {
     let prompt = _promptForToken
     let __HEADING__ = 'NEWTAJ Token with symbol name NTJ';
@@ -284,4 +402,19 @@ export const getStakingPrompt = (request: any) => {
     return prompt;
 }
 
-export default { getTokenPrompt, getNFTPrompt, getStakingPrompt }
+export const getFarmPrompt = (request: any) => {
+    let prompt = _promptForFarming
+    let __HEADING__ = 'Smart contracts for Farm have all the functionality.';
+    if (request.additionDetails) {
+        __HEADING__ = request.additionDetails
+    }
+    let __FEATURE__ = 'Farm basic functions'
+    if (request.featuresRequest && request?.featuresRequest?.length) {
+        __FEATURE__ = request?.featuresRequest.join(', ')
+    }
+    prompt = prompt.replace('__HEADING__', __HEADING__);
+    prompt = prompt.replace('__FEATURE__', __FEATURE__);
+    return prompt;
+}
+
+export default { getTokenPrompt, getNFTPrompt, getStakingPrompt, getFarmPrompt }

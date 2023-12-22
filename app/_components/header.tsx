@@ -192,7 +192,7 @@ export function Header() {
 
   return (
    
-    <><header className="!sticky top-6 z-10 flex h-16 w-full  border-2 rounded-2xl shrink-0 items-center justify-between bg-gray-100  bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-8 backdrop-blur-xl">
+    <><header className="!sticky top-6 z-10 flex h-16 w-full  border-2 rounded-2xl shrink-0 items-center justify-between bg-gradient-to-b from-background/10 via-background/50 to-background/80 px-8 backdrop-blur-xl">
       <div className="flex items-center gap-4">
         {isConnected ? (
           <>
@@ -202,10 +202,10 @@ export function Header() {
               <li
 
                 key={index}
-                className={`flex  rounded-md p-2 cursor-pointer hover:bg-gray-300 w-full !text-gray-700  text-sm font-semibold items-center gap-x-2 
+                className={`flex  rounded-md p-2 pl-3 pr-5 cursor-pointer hover:bg-gray-300 w-full !text-gray-700  text-sm font-semibold items-center gap-x-2 
                 ${Menu.gap ? "mt-1" : "mt-1"} ${index === 0 && "bg-light-white"}
                   
-                   ${currentTab === Menu?.tab ? '' : ''}
+                   ${currentTab === Menu?.tab ? 'shadow-2xl border-2 pl-3 pr-5' : ''}
                   `}
                 onClick={() => setCurrentTab(Menu?.tab)}
 

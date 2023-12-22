@@ -14,6 +14,7 @@ import { TbBrandVscode } from "react-icons/tb";
 import { IoCodeDownloadSharp } from "react-icons/io5";
 import { LiaFileContractSolid } from "react-icons/lia";
 import { LuHardHat } from "react-icons/lu";
+import { TempleHinduTwoTone } from '@mui/icons-material';
 
 const contract = `
 // SPDX-License-Identifier: MIT
@@ -25,25 +26,18 @@ contract MyToken is ERC20 {
     constructor() ERC20("MyToken", "MTK") {}
 }`
 
+
+interface BuilderForm {
+  template: string;
+  additionDetails: string;
+  featuresRequest: string[];
+}
+
 export default function Builder() {
   const [chatGPTRawResponse, setChatGPTRawResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
-  const [builderForm, setBuilderForm] = useState<any>({
-    template: '',
-    featuresRequest: [],
-    additionDetails: 'The Token name will MyToken with the symbol name MTK'
-
-  });
+  const [ isLoading, setIsLoading ] = useState( false )
   
-  const TEMPLATE_TO_COMMAND_MAPPING = {
-    Token: 'The Token name will MyToken with the symbol name MTK',
-    Staking: 'Smart contracts for staking have all the functionality.',
-    NFT: 'Smart contracts for NFT have all the functionality.',
-    Farm: '',
-    Marketplace: '',
-    Launchpad: ''
-  }
-  // Features for each template
+   // Features for each template
   const templateFeatures = {
     Token: ['Mintable', 'Burnable', 'Pausable', 'Permit', 'Votes', 'Flash Miniting'],
     NFT: ['Custom Metadata', 'Royalty Settings', 'NFT Minting', 'NFT Burning'],
@@ -54,6 +48,25 @@ export default function Builder() {
     // Define similar arrays for other templates if necessary...
   };
 
+
+
+  const [builderForm, setBuilderForm] = useState<BuilderForm>({
+    template: Object.keys(templateFeatures)[0],
+    additionDetails: 'The Token name will MyToken with the symbol name MTK',
+    featuresRequest: [], // Initialize with default features
+  });
+  
+
+
+    const TEMPLATE_TO_COMMAND_MAPPING: Record<string, string> = {
+    Token: 'The Token name will MyToken with the symbol name MTK',
+    Staking: 'Smart contracts for staking have all the functionality.',
+    NFT: 'Smart contracts for NFT have all the functionality.',
+    Farm: 'Smart contracts for Farm have all the functionality',
+    Marketplace: '',
+    Launchpad: '',
+  };
+ 
   // Features for each template
  
   const downloadSourceCode = () => {
@@ -134,43 +147,93 @@ export default function Builder() {
         })
       }
     } catch (error) {
-      console.log("LINE: 60", { error })
+      console.log("LINE: 139", { error })
     } finally {
       setIsLoading(false)
 
     }
   }
+
+  // const handleBuilderFormChange = (value: any, key: string) => {
+  //   // console.log("LINE: 146", { value, key })
+  //   if (['template', 'additionDetails'].includes(key)) {
+  //     setBuilderForm((prev) => ({
+  //       ...prev,
+  //       additionDetails: key === 'template' ? TEMPLATE_TO_COMMAND_MAPPING[value] : value,
+  //       [key]: value
+  //     }))
+  //   }
+  //   setChatGPTRawResponse('')
+  // }
+  
+
+//   const handleFeatureRequest = (feature: string) => {
+//   setBuilderForm((prev) => {
+//     const updatedFeaturesRequest = prev.featuresRequest.includes(feature)
+//       ? prev.featuresRequest.filter((item) => item !== feature)
+//       : [...prev.featuresRequest, feature];
+// // console.log(TEMPLATE_TO_COMMAND_MAPPING)
+//     const updatedAdditionDetails = `${''} including functions ${updatedFeaturesRequest.join(', ')}`;
+//     return {
+//       ...prev,
+//       featuresRequest: updatedFeaturesRequest,
+//       additionDetails: updatedAdditionDetails,
+//     };
+//   });
+  // };
+
   const handleBuilderFormChange = (value: any, key: string) => {
-    console.log("LINE: 139", { value, key })
-    if (['template', 'additionDetails'].includes(key)) {
-      setBuilderForm((prev) => ({
-        ...prev,
-        additionDetails: key === 'template' ? TEMPLATE_TO_COMMAND_MAPPING[value] : value,
-        [key]: value
-      }))
-    }
-    setChatGPTRawResponse('')
+  if (['template', 'additionDetails'].includes(key)) {
+    const selectedTemplateText = TEMPLATE_TO_COMMAND_MAPPING[value] || ''; // Default to empty string if not found
+    const updatedAdditionDetails =
+      key === 'template' ? `${selectedTemplateText} ${builderForm.featuresRequest.join(' ')}` : value;
+
+    setBuilderForm((prev) => ({
+      ...prev,
+      additionDetails: updatedAdditionDetails,
+      [key]: value,
+    }));
   }
-  const handleFeatureRequest = (feature: string) => {
-    console.log({ feature })
-    const featureIndex = builderForm?.featuresRequest.indexOf(feature);
-    const isFeatureBelongsToTemplate = templateFeatures[builderForm?.template].includes(feature);
-    console.log({ featureIndex, isFeatureBelongsToTemplate })
-    if (featureIndex < 0 && isFeatureBelongsToTemplate) {
-      // setFeatureRequest([...featureRequest, feature])
-      setBuilderForm((prev) => ({
-        ...prev,
-        featuresRequest: [...prev.featuresRequest, feature]
-      }))
-    }
-    if (featureIndex >= 0 && isFeatureBelongsToTemplate) {
-      setBuilderForm((prev) => ({
-        ...prev,
-        featuresRequest: builderForm?.featuresRequest?.filter((item: string) => item !== feature)
-      }))
-    }
-    console.log({ builderForm })
-  }
+  setChatGPTRawResponse('');
+  };
+  
+
+const handleFeatureRequest = (feature: string) => {
+  setBuilderForm((prev) => {
+    const updatedFeaturesRequest = prev.featuresRequest.includes(feature)
+      ? prev.featuresRequest.filter((item) => item !== feature)
+      : [...prev.featuresRequest, feature];
+
+    // Dynamically select template-specific text based on the chosen template
+    const updatedAdditionDetails = `${TEMPLATE_TO_COMMAND_MAPPING[prev.template]} that include functions ${updatedFeaturesRequest.join(', ')}`;
+    
+    return {
+      ...prev,
+      featuresRequest: updatedFeaturesRequest,
+      additionDetails: updatedAdditionDetails,
+    };
+  });
+};
+
+  
+//   const handleFeatureRequest = (feature: string) => {
+//   setBuilderForm((prev) => {
+//     const updatedFeaturesRequest = prev.featuresRequest.includes(feature)
+//       ? prev.featuresRequest.filter((item) => item !== feature)
+//       : [...prev.featuresRequest, feature];
+
+//     const updatedAdditionDetails = `The Token name will MyToken with the symbol name MTK ${updatedFeaturesRequest.join(' ')}`;
+//     const updatedCommandMapping = `${TEMPLATE_TO_COMMAND_MAPPING[prev.template]} ${updatedAdditionDetails}`;
+
+//     return {
+//       ...prev,
+//       featuresRequest: updatedFeaturesRequest,
+//       additionDetails: updatedAdditionDetails,
+//       // You can use updatedCommandMapping if needed for further processing
+//     };
+//   });
+// };
+
   const promptCall = async () => {
     console.log({ builderForm });
     setIsLoading(true)
@@ -235,7 +298,9 @@ export default function Builder() {
               <div style={{ display: "flex", flexDirection: "row" }} className="grid grid-cols-2 gap-4 mb-4">
                 {templateFeatures[builderForm?.template].map((feature, index) => (
                   <label key={index} className="flex items-center">
-                    <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={builderForm?.featuresRequest.includes(feature)} onClick={() => { handleFeatureRequest(feature) }} />
+                    {/* <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={ builderForm?.featuresRequest?.includes( feature ) } onClick={ () => { handleFeatureRequest( feature ) } } /> */}
+                                        <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={builderForm?.featuresRequest?.includes(feature)} onClick={() => { handleFeatureRequest(feature) }} />
+
                     <span className="ml-2 text-gray-800">{feature}</span>
                   </label>
                 ))}
