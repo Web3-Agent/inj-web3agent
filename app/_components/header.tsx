@@ -202,7 +202,7 @@ export function Header() {
               <li
 
                 key={index}
-                className={`flex  rounded-md p-2 pl-3 pr-5 cursor-pointer hover:bg-gray-300 w-full !text-gray-700  text-sm font-semibold items-center gap-x-2 
+                className={`flex  rounded-md p-2 pl-3 pr-5 cursor-pointer hover:shadow-2xl hover:border-2 hover:pl-3 hover:pr-5 w-full !text-gray-700  text-sm font-semibold items-center gap-x-2 
                 ${Menu.gap ? "mt-1" : "mt-1"} ${index === 0 && "bg-light-white"}
                   
                    ${currentTab === Menu?.tab ? 'shadow-2xl border-2 pl-3 pr-5' : ''}

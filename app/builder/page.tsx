@@ -154,33 +154,6 @@ export default function Builder() {
     }
   }
 
-  // const handleBuilderFormChange = (value: any, key: string) => {
-  //   // console.log("LINE: 146", { value, key })
-  //   if (['template', 'additionDetails'].includes(key)) {
-  //     setBuilderForm((prev) => ({
-  //       ...prev,
-  //       additionDetails: key === 'template' ? TEMPLATE_TO_COMMAND_MAPPING[value] : value,
-  //       [key]: value
-  //     }))
-  //   }
-  //   setChatGPTRawResponse('')
-  // }
-  
-
-//   const handleFeatureRequest = (feature: string) => {
-//   setBuilderForm((prev) => {
-//     const updatedFeaturesRequest = prev.featuresRequest.includes(feature)
-//       ? prev.featuresRequest.filter((item) => item !== feature)
-//       : [...prev.featuresRequest, feature];
-// // console.log(TEMPLATE_TO_COMMAND_MAPPING)
-//     const updatedAdditionDetails = `${''} including functions ${updatedFeaturesRequest.join(', ')}`;
-//     return {
-//       ...prev,
-//       featuresRequest: updatedFeaturesRequest,
-//       additionDetails: updatedAdditionDetails,
-//     };
-//   });
-  // };
 
   const handleBuilderFormChange = (value: any, key: string) => {
   if (['template', 'additionDetails'].includes(key)) {
@@ -216,24 +189,6 @@ const handleFeatureRequest = (feature: string) => {
 };
 
   
-//   const handleFeatureRequest = (feature: string) => {
-//   setBuilderForm((prev) => {
-//     const updatedFeaturesRequest = prev.featuresRequest.includes(feature)
-//       ? prev.featuresRequest.filter((item) => item !== feature)
-//       : [...prev.featuresRequest, feature];
-
-//     const updatedAdditionDetails = `The Token name will MyToken with the symbol name MTK ${updatedFeaturesRequest.join(' ')}`;
-//     const updatedCommandMapping = `${TEMPLATE_TO_COMMAND_MAPPING[prev.template]} ${updatedAdditionDetails}`;
-
-//     return {
-//       ...prev,
-//       featuresRequest: updatedFeaturesRequest,
-//       additionDetails: updatedAdditionDetails,
-//       // You can use updatedCommandMapping if needed for further processing
-//     };
-//   });
-// };
-
   const promptCall = async () => {
     console.log({ builderForm });
     setIsLoading(true)
@@ -298,9 +253,7 @@ const handleFeatureRequest = (feature: string) => {
               <div style={{ display: "flex", flexDirection: "row" }} className="grid grid-cols-2 gap-4 mb-4">
                 {templateFeatures[builderForm?.template].map((feature, index) => (
                   <label key={index} className="flex items-center">
-                    {/* <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={ builderForm?.featuresRequest?.includes( feature ) } onClick={ () => { handleFeatureRequest( feature ) } } /> */}
-                                        <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={builderForm?.featuresRequest?.includes(feature)} onClick={() => { handleFeatureRequest(feature) }} />
-
+                    <input type="checkbox" className="form-checkbox accent-black  h-5 w-5" checked={builderForm?.featuresRequest?.includes(feature)} onClick={() => { handleFeatureRequest(feature) }} />
                     <span className="ml-2 text-gray-800">{feature}</span>
                   </label>
                 ))}
